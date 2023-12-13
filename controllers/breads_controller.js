@@ -3,16 +3,20 @@ const express = require('express')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
 const Baker = require('../models/baker.js')
-const dataSeed = require('../models/bread_seed.js')
+const breadSeedData = require('../models/bread_seed.js')
 
 // INDEX
 breads.get('/', (req, res) => {
-  Bread.find()
-    .then(foundBreads => {
-      res.render('index', {
-        breads: foundBreads,
-        title: 'Index Page'
-      })
+  Baker.find()
+    .then(foundBakers => {
+      Bread.find()
+        .then(foundBreads => {
+          res.render('index', {
+            breads: foundBreads,
+            bakers: foundBakers,
+            title: 'Index Page'
+          })
+        })
     })
 })
 
@@ -28,8 +32,8 @@ breads.get('/new', (req, res) => {
 
 // INSERT MANY
 breads.get('/data/seed', (req, res) => {
-  Bread.insertMany(dataSeed)
-    .then(createdBreads => {
+  Bread.insertMany(breadSeedData)
+    .then(createBreads => {
       res.redirect('/breads')
     })
 })
