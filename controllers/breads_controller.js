@@ -1,7 +1,9 @@
+// dependencies
 const express = require('express')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
-const dataSeed = require('../models/insert_many.js')
+const Baker = require('../models/baker.js')
+const dataSeed = require('../models/bread_seed.js')
 
 // INDEX
 breads.get('/', (req, res) => {
@@ -16,7 +18,12 @@ breads.get('/', (req, res) => {
 
 // NEW
 breads.get('/new', (req, res) => {
-  res.render('new')
+  Baker.find()
+    .then(foundBakers => {
+      res.render('new', {
+        bakers: foundBakers
+      })
+    })
 })
 
 // INSERT MANY
@@ -29,19 +36,23 @@ breads.get('/data/seed', (req, res) => {
 
 // EDIT
 breads.get('/:id/edit', (req, res) => {
-  Bread.findById(req.params.id)
-    .then(foundBread => {
-      res.render('edit', {
-        bread: foundBread
-      })
+  Baker.find()
+    .then(foundBakers => {
+      Bread.findById(req.params.id)
+        .then(foundBread => {
+          res.render('edit', {
+            bread: foundBread,
+            bakers: foundBakers
+          })
+        })
     })
 })
 
 // SHOW
 breads.get('/:id', (req, res) => {
   Bread.findById(req.params.id)
+    .populate('baker')
     .then(foundBread => {
-      const bakedBy = foundBread.getBakedBy()
       res.render('show', {
         bread: foundBread
       })
